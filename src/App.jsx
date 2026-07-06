@@ -107,7 +107,7 @@ export default function App() {
       case "underwriting":
         return <UnderwritingPage formState={activeFormState} setFormState={updateActiveFormState} onSaveRecord={saveActiveRecord} />;
       case "due-diligence":
-        return <DueDiligencePage />;
+        return <DueDiligencePage formState={activeFormState} setFormState={updateActiveFormState} onSaveRecord={saveActiveRecord} />;
       case "portfolio":
         return <PortfolioPage />;
       case "exit-tracker":

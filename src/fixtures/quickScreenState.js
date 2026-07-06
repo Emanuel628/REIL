@@ -41,6 +41,20 @@ export function buildQuickScreenState(overrides = {}) {
     targetCashOnCash: "0.10",
     neighborhoodScore: "",
     vacancyRate: "0.05",
+    roofYearsRemaining: "",
+    roofCondition: "good",
+    roofAdjustment: "",
+    hvacYearsRemaining: "",
+    hvacCondition: "good",
+    hvacAdjustment: "",
+    sewerRisk: "low",
+    sewerAdjustment: "",
+    electricalRisk: "low",
+    electricalAdjustment: "",
+    utilityMetering: "separate",
+    utilityAdjustment: "",
+    competitiveSupplyRisk: "low",
+    fieldNotes: "",
     ...overrides
   };
 }
@@ -106,14 +120,55 @@ export function buildDealFromState(state) {
     },
     dueDiligence: {
       fieldReviewed: Boolean(state.fieldReviewed),
-      sewerRisk: "low",
-      roofYearsRemaining: 0,
-      hvacYearsRemaining: 0,
-      electricalRisk: "low",
-      utilityMetering: "separate",
+      sewerRisk: state.sewerRisk || "low",
+      roofYearsRemaining: Number(state.roofYearsRemaining) || 0,
+      hvacYearsRemaining: Number(state.hvacYearsRemaining) || 0,
+      electricalRisk: state.electricalRisk || "low",
+      utilityMetering: state.utilityMetering || "separate",
       neighborhoodScore: Number(state.neighborhoodScore) || 0,
-      competitiveSupplyRisk: "low",
-      capexAdjustments: []
+      competitiveSupplyRisk: state.competitiveSupplyRisk || "low",
+      capexAdjustments: [
+        {
+          component: "roof",
+          age: Number(state.roofYearsRemaining) || 0,
+          condition: state.roofCondition || "good",
+          adjustment: Number(state.roofAdjustment) || 0,
+          estimatedCost: Number(state.roofAdjustment) || 0,
+          requiredNow: Number(state.roofAdjustment) > 0
+        },
+        {
+          component: "hvac",
+          age: Number(state.hvacYearsRemaining) || 0,
+          condition: state.hvacCondition || "good",
+          adjustment: Number(state.hvacAdjustment) || 0,
+          estimatedCost: Number(state.hvacAdjustment) || 0,
+          requiredNow: Number(state.hvacAdjustment) > 0
+        },
+        {
+          component: "sewer",
+          age: 0,
+          condition: state.sewerRisk || "low",
+          adjustment: Number(state.sewerAdjustment) || 0,
+          estimatedCost: Number(state.sewerAdjustment) || 0,
+          requiredNow: Number(state.sewerAdjustment) > 0
+        },
+        {
+          component: "electrical",
+          age: 0,
+          condition: state.electricalRisk || "low",
+          adjustment: Number(state.electricalAdjustment) || 0,
+          estimatedCost: Number(state.electricalAdjustment) || 0,
+          requiredNow: Number(state.electricalAdjustment) > 0
+        },
+        {
+          component: "utilities",
+          age: 0,
+          condition: state.utilityMetering || "separate",
+          adjustment: Number(state.utilityAdjustment) || 0,
+          estimatedCost: Number(state.utilityAdjustment) || 0,
+          requiredNow: Number(state.utilityAdjustment) > 0
+        }
+      ]
     }
   };
 }
