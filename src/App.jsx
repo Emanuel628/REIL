@@ -109,7 +109,7 @@ export default function App() {
       case "due-diligence":
         return <DueDiligencePage formState={activeFormState} setFormState={updateActiveFormState} onSaveRecord={saveActiveRecord} />;
       case "portfolio":
-        return <PortfolioPage />;
+        return <PortfolioPage formState={activeFormState} setFormState={updateActiveFormState} onSaveRecord={saveActiveRecord} />;
       case "exit-tracker":
         return <ExitTrackerPage />;
       case "command-center":

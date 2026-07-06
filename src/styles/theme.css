@@ -769,6 +769,59 @@ button {
   color: var(--signal-red);
 }
 
+.ledger-table {
+  display: grid;
+  gap: 1px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--line) 50%, transparent);
+}
+
+.ledger-row {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--card);
+  font-family: "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+}
+
+.ledger-row.ledger-head {
+  background: color-mix(in srgb, var(--blueprint-line) 10%, var(--card));
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: 700;
+}
+
+.variance-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.variance-chip.positive {
+  background: color-mix(in srgb, var(--signal-green) 16%, transparent);
+  color: var(--signal-green);
+}
+
+.variance-chip.negative {
+  background: color-mix(in srgb, var(--signal-red) 16%, transparent);
+  color: var(--signal-red);
+}
+
+.variance-chip.flat {
+  background: color-mix(in srgb, var(--line) 60%, transparent);
+  color: var(--muted-ink);
+}
+
 @media (max-width: 1080px) {
   .workspace-shell {
     grid-template-columns: 1fr;
@@ -795,6 +848,10 @@ button {
   }
 
   .condition-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ledger-row {
     grid-template-columns: 1fr;
   }
 }
