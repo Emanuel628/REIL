@@ -7,6 +7,8 @@ export function cloneDeal(deal) {
 export function buildQuickScreenState(deal = strongRentalDeal) {
   return {
     preset: "custom",
+    recordName: deal.address ?? "Untitled deal",
+    address: deal.address ?? "",
     askingPrice: deal.purchase.askingPrice,
     offerPrice: deal.purchase.offerPrice,
     supportableValue: deal.underwriting.supportableValue,
@@ -37,6 +39,7 @@ export function buildQuickScreenState(deal = strongRentalDeal) {
 export function buildDealFromState(state) {
   const baseDeal = cloneDeal(strongRentalDeal);
 
+  baseDeal.address = state.address || state.recordName || "Untitled deal";
   baseDeal.purchase.askingPrice = Number(state.askingPrice);
   baseDeal.purchase.offerPrice = Number(state.offerPrice);
   baseDeal.purchase.rehabBudget = Number(state.rehabBudget);

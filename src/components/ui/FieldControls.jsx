@@ -10,6 +10,18 @@ export function NumberField({ label, value, name, onChange, hint, step = "1" }) 
   );
 }
 
+export function TextField({ label, value, name, onChange, hint = null, placeholder = "" }) {
+  return (
+    <label className="field-group">
+      <span className="field-label">
+        <span>{label}</span>
+        {hint ? <span className="field-hint">{hint}</span> : null}
+      </span>
+      <input className="field-input" type="text" name={name} value={value} onChange={onChange} placeholder={placeholder} />
+    </label>
+  );
+}
+
 export function ToggleField({ label, value, name, onChange }) {
   return (
     <label className="field-group">

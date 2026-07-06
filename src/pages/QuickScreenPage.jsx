@@ -1,4 +1,4 @@
-import { NumberField, ToggleField, MetricCard } from "../components/ui/FieldControls.jsx";
+import { NumberField, ToggleField, MetricCard, TextField } from "../components/ui/FieldControls.jsx";
 import { PageFrame } from "../components/ui/PageFrame.jsx";
 import { buildDealFromState, buildQuickScreenState } from "../fixtures/quickScreenState.js";
 import { failingRentalDeal, strongRentalDeal, unrentableSpeculativeDeal } from "../fixtures/sampleDeals.js";
@@ -40,7 +40,7 @@ function percent(value, digits = 1) {
   return `${((value ?? 0) * 100).toFixed(digits)}%`;
 }
 
-export default function QuickScreenPage({ formState, setFormState }) {
+export default function QuickScreenPage({ formState, setFormState, onSaveRecord }) {
   const activeDeal = buildDealFromState(formState);
   const analysis = analyzeDeal(activeDeal);
 
@@ -73,19 +73,24 @@ export default function QuickScreenPage({ formState, setFormState }) {
       title="Quick Screen"
       copy="This is the first live workflow in the app: basis, rent, OpEx, debt, and confidence flags in one place."
       actions={
-        <div className="preset-row">
-          {Object.entries(PRESETS).map(([key, preset]) => (
-            <button
-              key={key}
-              className="preset-button"
-              type="button"
-              data-active={formState.preset === key}
-              onClick={() => loadPreset(key)}
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="preset-row">
+            {Object.entries(PRESETS).map(([key, preset]) => (
+              <button
+                key={key}
+                className="preset-button"
+                type="button"
+                data-active={formState.preset === key}
+                onClick={() => loadPreset(key)}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          <button className="primary-button" type="button" onClick={() => onSaveRecord(formState)}>
+            Save Record
+          </button>
+        </>
       }
     >
       <div className="workspace-grid">
@@ -102,6 +107,12 @@ export default function QuickScreenPage({ formState, setFormState }) {
             </div>
 
             <div className="form-grid">
+              <div className="field-span">
+                <p className="panel-kicker">Record</p>
+              </div>
+              <TextField label="Record Name" name="recordName" value={formState.recordName} onChange={handleChange} />
+              <TextField label="Address" name="address" value={formState.address} onChange={handleChange} placeholder="123 Main St, Tampa, FL" />
+
               <div className="field-span">
                 <p className="panel-kicker">Basis</p>
               </div>

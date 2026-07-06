@@ -8,6 +8,7 @@ import QuickScreenPage from "./pages/QuickScreenPage.jsx";
 import UnderwritingPage from "./pages/UnderwritingPage.jsx";
 import { buildQuickScreenState } from "./fixtures/quickScreenState.js";
 import { strongRentalDeal } from "./fixtures/sampleDeals.js";
+import { createBlankRecord, loadRecords, persistRecords, summarizeRecord } from "./utils/recordStore.js";
 
 const NAV_ITEMS = [
   { id: "command-center", label: "Command Center", section: "Home" },
@@ -21,16 +22,75 @@ const NAV_ITEMS = [
 export default function App() {
   const [theme, setTheme] = useState("light");
   const [activePage, setActivePage] = useState("command-center");
-  const [formState, setFormState] = useState(buildQuickScreenState(strongRentalDeal));
+  const [records, setRecords] = useState(() => loadRecords());
+  const [activeRecordId, setActiveRecordId] = useState(null);
+  const activeRecord = records.find((record) => record.id === activeRecordId) ?? {
+    id: "transient",
+    formState: buildQuickScreenState(strongRentalDeal)
+  };
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
+  useEffect(() => {
+    if (!activeRecordId && records[0]?.id) {
+      setActiveRecordId(records[0].id);
+    }
+  }, [activeRecordId, records]);
+
+  useEffect(() => {
+    persistRecords(records);
+  }, [records]);
+
+  function updateActiveFormState(updater) {
+    setRecords((current) =>
+      current.map((record) =>
+        record.id === activeRecordId
+          ? {
+              ...record,
+              formState: typeof updater === "function" ? updater(record.formState) : updater,
+              updatedAt: new Date().toISOString()
+            }
+          : record
+      )
+    );
+  }
+
+  function saveActiveRecord(nextFormState) {
+    setRecords((current) =>
+      current.map((record) =>
+        record.id === activeRecordId
+          ? {
+              ...record,
+              formState: nextFormState,
+              updatedAt: new Date().toISOString()
+            }
+          : record
+      )
+    );
+  }
+
+  function createRecord() {
+    const record = createBlankRecord();
+    setRecords((current) => [record, ...current]);
+    setActiveRecordId(record.id);
+    setActivePage("quick-screen");
+  }
+
+  const recordSummaries = records.map(summarizeRecord);
+
   function renderPage() {
     switch (activePage) {
       case "quick-screen":
-        return <QuickScreenPage formState={formState} setFormState={setFormState} />;
+        return (
+          <QuickScreenPage
+            formState={activeRecord.formState}
+            setFormState={updateActiveFormState}
+            activeRecordId={activeRecordId}
+            onSaveRecord={saveActiveRecord}
+          />
+        );
       case "underwriting":
         return <UnderwritingPage />;
       case "due-diligence":
@@ -41,7 +101,18 @@ export default function App() {
         return <ExitTrackerPage />;
       case "command-center":
       default:
-        return <CommandCenterPage formState={formState} />;
+        return (
+          <CommandCenterPage
+            formState={activeRecord.formState}
+            records={recordSummaries}
+            activeRecordId={activeRecordId}
+            onSelectRecord={(recordId) => {
+              setActiveRecordId(recordId);
+              setActivePage("quick-screen");
+            }}
+            onCreateRecord={createRecord}
+          />
+        );
     }
   }
 

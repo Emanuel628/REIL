@@ -11,7 +11,7 @@ function currency(value) {
   }).format(value ?? 0);
 }
 
-export default function CommandCenterPage({ formState }) {
+export default function CommandCenterPage({ formState, records, activeRecordId, onSelectRecord, onCreateRecord }) {
   const analysis = analyzeDeal(buildDealFromState(formState));
 
   return (
@@ -19,6 +19,11 @@ export default function CommandCenterPage({ formState }) {
       kicker="Command Center"
       title="One desk, one active record"
       copy="This becomes the always-home page. For now it summarizes the live Quick Screen deal and previews the lifecycle split."
+      actions={
+        <button className="primary-button" type="button" onClick={onCreateRecord}>
+          New Record
+        </button>
+      }
     >
       <div className="dashboard-grid">
         <section className="panel">
@@ -39,20 +44,44 @@ export default function CommandCenterPage({ formState }) {
           </div>
         </section>
 
-        <PlaceholderPanel
-          title="Acquisitions track"
-          copy="This area will become the pipeline card grid with score lamps, filters, and status progression."
-          bullets={[
-            "Lead cards will summarize score, price, and status.",
-            "Closing a deal will move the same record into the ownership track.",
-            "The Quick Screen page is already feeding the shape of this view."
-          ]}
-        />
+        <section className="panel">
+          <div className="panel-inner">
+            <div className="panel-header">
+              <div>
+                <p className="panel-kicker">Acquisitions track</p>
+                <h3 className="panel-title">Stored records</h3>
+                <p className="panel-copy">These cards now come from persisted local records, not a single transient form.</p>
+              </div>
+            </div>
+            <div className="record-grid">
+              {records.map((record) => (
+                <button
+                  key={record.id}
+                  type="button"
+                  className="record-card"
+                  data-active={record.id === activeRecordId}
+                  onClick={() => onSelectRecord(record.id)}
+                >
+                  <div className="record-head">
+                    <span className={`status-badge compact ${record.grade}`}>{record.grade}</span>
+                    <span className="record-score">{record.score}</span>
+                  </div>
+                  <strong className="record-title">{record.recordName}</strong>
+                  <span className="record-address">{record.address}</span>
+                  <div className="record-metrics">
+                    <span>DSCR {record.dscr.toFixed(2)}x</span>
+                    <span>{currency(record.cashFlow)}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <PlaceholderPanel
           title="Portfolio track"
           copy="This side will hold active assets, monthly cash-flow posture, and archive behavior after sale."
-          emphasis="Phase 2 intentionally stops short of persistence. The structure is here; the database comes next."
+          emphasis="Phase 2 persistence is now in place locally. The next storage step is a real database-backed property table."
         />
       </div>
     </PageFrame>
