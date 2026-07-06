@@ -76,6 +76,72 @@ button {
   padding: 32px 20px 48px;
 }
 
+.workspace-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
+}
+
+.sidebar {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+}
+
+.sidebar-inner {
+  display: grid;
+  gap: 24px;
+}
+
+.sidebar-title {
+  margin: 0;
+  font-family: "Newsreader", serif;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.nav-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.nav-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 16px;
+  background: transparent;
+  color: var(--ink);
+}
+
+.nav-item[data-active="true"] {
+  border-color: rgba(var(--grid-rgb), 0.4);
+  background: rgba(var(--grid-rgb), 0.08);
+}
+
+.nav-section {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--blueprint-line);
+}
+
+.nav-label {
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  padding-top: 8px;
+}
+
+.content-shell {
+  display: grid;
+  gap: 24px;
+}
+
 .app-topbar {
   display: flex;
   align-items: center;
@@ -141,6 +207,46 @@ button {
   display: grid;
   grid-template-columns: minmax(320px, 1.1fr) minmax(320px, 0.9fr);
   gap: 24px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.page-frame {
+  display: grid;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.page-title {
+  margin: 0;
+  font-family: "Newsreader", serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.page-copy {
+  margin: 8px 0 0;
+  max-width: 70ch;
+  color: var(--muted-ink);
+  line-height: 1.6;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 12px;
 }
 
 .panel {
@@ -489,8 +595,38 @@ button {
   line-height: 1.6;
 }
 
+.placeholder-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.placeholder-title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.placeholder-emphasis {
+  border: 1px solid rgba(var(--grid-rgb), 0.2);
+  border-radius: 18px;
+  padding: 14px 16px;
+  color: var(--blueprint);
+  background: rgba(var(--grid-rgb), 0.06);
+}
+
 @media (max-width: 1080px) {
+  .workspace-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
   .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -508,5 +644,13 @@ button {
   .form-grid,
   .metric-grid {
     grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .page-actions {
+    justify-content: start;
   }
 }
