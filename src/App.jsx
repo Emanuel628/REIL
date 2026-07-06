@@ -7,7 +7,6 @@ import PortfolioPage from "./pages/PortfolioPage.jsx";
 import QuickScreenPage from "./pages/QuickScreenPage.jsx";
 import UnderwritingPage from "./pages/UnderwritingPage.jsx";
 import { buildQuickScreenState } from "./fixtures/quickScreenState.js";
-import { strongRentalDeal } from "./fixtures/sampleDeals.js";
 import { createBlankRecord, loadRecords, persistRecords, summarizeRecord } from "./utils/recordStore.js";
 
 const NAV_ITEMS = [
@@ -24,10 +23,9 @@ export default function App() {
   const [activePage, setActivePage] = useState("command-center");
   const [records, setRecords] = useState(() => loadRecords());
   const [activeRecordId, setActiveRecordId] = useState(null);
-  const activeRecord = records.find((record) => record.id === activeRecordId) ?? {
-    id: "transient",
-    formState: buildQuickScreenState(strongRentalDeal)
-  };
+  const [draftFormState, setDraftFormState] = useState(() => buildQuickScreenState());
+  const activeRecord = records.find((record) => record.id === activeRecordId) ?? null;
+  const activeFormState = activeRecord?.formState ?? draftFormState;
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -44,6 +42,11 @@ export default function App() {
   }, [records]);
 
   function updateActiveFormState(updater) {
+    if (!activeRecordId) {
+      setDraftFormState((current) => (typeof updater === "function" ? updater(current) : updater));
+      return;
+    }
+
     setRecords((current) =>
       current.map((record) =>
         record.id === activeRecordId
@@ -58,6 +61,18 @@ export default function App() {
   }
 
   function saveActiveRecord(nextFormState) {
+    if (!activeRecordId) {
+      const record = {
+        ...createBlankRecord(),
+        formState: nextFormState,
+        updatedAt: new Date().toISOString()
+      };
+
+      setRecords((current) => [record, ...current]);
+      setActiveRecordId(record.id);
+      return;
+    }
+
     setRecords((current) =>
       current.map((record) =>
         record.id === activeRecordId
@@ -72,9 +87,8 @@ export default function App() {
   }
 
   function createRecord() {
-    const record = createBlankRecord();
-    setRecords((current) => [record, ...current]);
-    setActiveRecordId(record.id);
+    setActiveRecordId(null);
+    setDraftFormState(buildQuickScreenState());
     setActivePage("quick-screen");
   }
 
@@ -85,9 +99,8 @@ export default function App() {
       case "quick-screen":
         return (
           <QuickScreenPage
-            formState={activeRecord.formState}
+            formState={activeFormState}
             setFormState={updateActiveFormState}
-            activeRecordId={activeRecordId}
             onSaveRecord={saveActiveRecord}
           />
         );
@@ -103,7 +116,7 @@ export default function App() {
       default:
         return (
           <CommandCenterPage
-            formState={activeRecord.formState}
+            formState={activeFormState}
             records={recordSummaries}
             activeRecordId={activeRecordId}
             onSelectRecord={(recordId) => {

@@ -686,6 +686,20 @@ button {
   font-size: 0.86rem;
 }
 
+.empty-state {
+  display: grid;
+  gap: 10px;
+  border: 1px dashed color-mix(in srgb, var(--line) 78%, var(--blueprint-line));
+  border-radius: 22px;
+  padding: 18px;
+  background: rgba(var(--grid-rgb), 0.03);
+}
+
+.empty-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
 @media (max-width: 1080px) {
   .workspace-shell {
     grid-template-columns: 1fr;

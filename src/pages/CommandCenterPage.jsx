@@ -13,6 +13,7 @@ function currency(value) {
 
 export default function CommandCenterPage({ formState, records, activeRecordId, onSelectRecord, onCreateRecord }) {
   const analysis = analyzeDeal(buildDealFromState(formState));
+  const hasRecords = records.length > 0;
 
   return (
     <PageFrame
@@ -33,14 +34,23 @@ export default function CommandCenterPage({ formState, records, activeRecordId, 
                 <p className="panel-kicker">Live snapshot</p>
                 <h3 className="panel-title">Current acquisition pulse</h3>
               </div>
-              <div className={`status-badge ${analysis.grade}`}>{analysis.grade}</div>
+              {hasRecords ? <div className={`status-badge ${analysis.grade}`}>{analysis.grade}</div> : null}
             </div>
-            <div className="metric-grid">
-              <MetricCard label="Score" value={analysis.score} />
-              <MetricCard label="DSCR" value={`${analysis.metrics.dscr.toFixed(2)}x`} />
-              <MetricCard label="Cash Flow" value={currency(analysis.metrics.annualLeveredCashFlow)} />
-              <MetricCard label="MAO" value={currency(analysis.metrics.maximumAllowableOffer)} />
-            </div>
+            {hasRecords ? (
+              <div className="metric-grid">
+                <MetricCard label="Score" value={analysis.score} />
+                <MetricCard label="DSCR" value={`${analysis.metrics.dscr.toFixed(2)}x`} />
+                <MetricCard label="Cash Flow" value={currency(analysis.metrics.annualLeveredCashFlow)} />
+                <MetricCard label="MAO" value={currency(analysis.metrics.maximumAllowableOffer)} />
+              </div>
+            ) : (
+              <div className="empty-state">
+                <h4 className="empty-title">No active records yet</h4>
+                <p className="panel-copy">
+                  Start a record in Quick Screen, save it, and the Command Center will pick it up here.
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -53,28 +63,37 @@ export default function CommandCenterPage({ formState, records, activeRecordId, 
                 <p className="panel-copy">These cards now come from persisted local records, not a single transient form.</p>
               </div>
             </div>
-            <div className="record-grid">
-              {records.map((record) => (
-                <button
-                  key={record.id}
-                  type="button"
-                  className="record-card"
-                  data-active={record.id === activeRecordId}
-                  onClick={() => onSelectRecord(record.id)}
-                >
-                  <div className="record-head">
-                    <span className={`status-badge compact ${record.grade}`}>{record.grade}</span>
-                    <span className="record-score">{record.score}</span>
-                  </div>
-                  <strong className="record-title">{record.recordName}</strong>
-                  <span className="record-address">{record.address}</span>
-                  <div className="record-metrics">
-                    <span>DSCR {record.dscr.toFixed(2)}x</span>
-                    <span>{currency(record.cashFlow)}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+            {hasRecords ? (
+              <div className="record-grid">
+                {records.map((record) => (
+                  <button
+                    key={record.id}
+                    type="button"
+                    className="record-card"
+                    data-active={record.id === activeRecordId}
+                    onClick={() => onSelectRecord(record.id)}
+                  >
+                    <div className="record-head">
+                      <span className={`status-badge compact ${record.grade}`}>{record.grade}</span>
+                      <span className="record-score">{record.score}</span>
+                    </div>
+                    <strong className="record-title">{record.recordName || "Untitled deal"}</strong>
+                    <span className="record-address">{record.address || "No address yet"}</span>
+                    <div className="record-metrics">
+                      <span>DSCR {record.dscr.toFixed(2)}x</span>
+                      <span>{currency(record.cashFlow)}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <h4 className="empty-title">No acquisition records saved</h4>
+                <p className="panel-copy">
+                  This area stays empty until you save a real property record. No filler cards.
+                </p>
+              </div>
+            )}
           </div>
         </section>
 

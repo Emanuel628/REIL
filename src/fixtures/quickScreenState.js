@@ -1,68 +1,104 @@
-import { strongRentalDeal } from "./sampleDeals.js";
-
-export function cloneDeal(deal) {
-  return structuredClone(deal);
-}
-
-export function buildQuickScreenState(deal = strongRentalDeal) {
+export function buildQuickScreenState(overrides = {}) {
   return {
     preset: "custom",
-    recordName: deal.address ?? "Untitled deal",
-    address: deal.address ?? "",
-    askingPrice: deal.purchase.askingPrice,
-    offerPrice: deal.purchase.offerPrice,
-    supportableValue: deal.underwriting.supportableValue,
-    rehabBudget: deal.purchase.rehabBudget,
-    immediateCapex: deal.purchase.immediateCapex,
-    grossLivingArea: deal.property.grossLivingArea,
-    monthlyRent1: deal.income.monthlyRentByUnit[0] ?? 0,
-    monthlyRent2: deal.income.monthlyRentByUnit[1] ?? 0,
-    annualTaxes: deal.expenses.annualTaxes,
-    annualInsurance: deal.expenses.annualInsurance,
-    annualRepairsMaintenance: deal.expenses.annualRepairsMaintenance,
-    annualManagement: deal.expenses.annualManagement,
-    annualUtilitiesOwnerPaid: deal.expenses.annualUtilitiesOwnerPaid,
-    annualTurnoverAdmin: deal.expenses.annualTurnoverAdmin,
-    annualCapexReserve: deal.expenses.annualCapexReserve,
-    loanAmount: deal.financing.loanAmount,
-    interestRate: deal.financing.interestRate,
-    stressInterestRate: deal.financing.stressInterestRate,
-    amortizationYears: deal.financing.amortizationYears,
-    rentsVerified: deal.underwriting.rentsVerified,
-    requiresRentGrowthToWork: deal.underwriting.requiresRentGrowthToWork,
-    fieldReviewed: deal.dueDiligence.fieldReviewed,
-    neighborhoodScore: deal.dueDiligence.neighborhoodScore,
-    vacancyRate: deal.income.vacancyRate
+    recordName: "",
+    address: "",
+    askingPrice: "",
+    offerPrice: "",
+    supportableValue: "",
+    rehabBudget: "",
+    immediateCapex: "",
+    grossLivingArea: "",
+    monthlyRent1: "",
+    monthlyRent2: "",
+    annualTaxes: "",
+    annualInsurance: "",
+    annualRepairsMaintenance: "",
+    annualManagement: "",
+    annualUtilitiesOwnerPaid: "",
+    annualTurnoverAdmin: "",
+    annualCapexReserve: "",
+    loanAmount: "",
+    interestRate: "",
+    stressInterestRate: "",
+    amortizationYears: "30",
+    rentsVerified: false,
+    requiresRentGrowthToWork: false,
+    fieldReviewed: false,
+    neighborhoodScore: "",
+    vacancyRate: "0.05",
+    ...overrides
   };
 }
 
 export function buildDealFromState(state) {
-  const baseDeal = cloneDeal(strongRentalDeal);
-
-  baseDeal.address = state.address || state.recordName || "Untitled deal";
-  baseDeal.purchase.askingPrice = Number(state.askingPrice);
-  baseDeal.purchase.offerPrice = Number(state.offerPrice);
-  baseDeal.purchase.rehabBudget = Number(state.rehabBudget);
-  baseDeal.purchase.immediateCapex = Number(state.immediateCapex);
-  baseDeal.property.grossLivingArea = Number(state.grossLivingArea);
-  baseDeal.income.monthlyRentByUnit = [Number(state.monthlyRent1), Number(state.monthlyRent2)];
-  baseDeal.income.vacancyRate = Number(state.vacancyRate);
-  baseDeal.expenses.annualTaxes = Number(state.annualTaxes);
-  baseDeal.expenses.annualInsurance = Number(state.annualInsurance);
-  baseDeal.expenses.annualRepairsMaintenance = Number(state.annualRepairsMaintenance);
-  baseDeal.expenses.annualManagement = Number(state.annualManagement);
-  baseDeal.expenses.annualUtilitiesOwnerPaid = Number(state.annualUtilitiesOwnerPaid);
-  baseDeal.expenses.annualTurnoverAdmin = Number(state.annualTurnoverAdmin);
-  baseDeal.expenses.annualCapexReserve = Number(state.annualCapexReserve);
-  baseDeal.financing.loanAmount = Number(state.loanAmount);
-  baseDeal.financing.interestRate = Number(state.interestRate);
-  baseDeal.financing.stressInterestRate = Number(state.stressInterestRate);
-  baseDeal.financing.amortizationYears = Number(state.amortizationYears);
-  baseDeal.underwriting.supportableValue = Number(state.supportableValue);
-  baseDeal.underwriting.rentsVerified = Boolean(state.rentsVerified);
-  baseDeal.underwriting.requiresRentGrowthToWork = Boolean(state.requiresRentGrowthToWork);
-  baseDeal.dueDiligence.fieldReviewed = Boolean(state.fieldReviewed);
-  baseDeal.dueDiligence.neighborhoodScore = Number(state.neighborhoodScore);
-
-  return baseDeal;
+  return {
+    dealMode: "investment_rental",
+    assetType: "duplex",
+    address: state.address || state.recordName || "Untitled deal",
+    purchase: {
+      askingPrice: Number(state.askingPrice) || 0,
+      offerPrice: Number(state.offerPrice) || 0,
+      closingCosts: 0,
+      downPaymentRate: 0,
+      rehabBudget: Number(state.rehabBudget) || 0,
+      immediateCapex: Number(state.immediateCapex) || 0,
+      initialReserves: 0
+    },
+    property: {
+      units: 2,
+      grossLivingArea: Number(state.grossLivingArea) || 0,
+      ownerOccupiedUnits: 0
+    },
+    income: {
+      monthlyRentByUnit: [Number(state.monthlyRent1) || 0, Number(state.monthlyRent2) || 0],
+      otherMonthlyIncome: {
+        parking: 0,
+        laundry: 0,
+        pet: 0,
+        rubs: 0,
+        misc: 0
+      },
+      vacancyRate: Number(state.vacancyRate) || 0,
+      creditLossRate: 0
+    },
+    expenses: {
+      annualTaxes: Number(state.annualTaxes) || 0,
+      annualInsurance: Number(state.annualInsurance) || 0,
+      annualRepairsMaintenance: Number(state.annualRepairsMaintenance) || 0,
+      annualManagement: Number(state.annualManagement) || 0,
+      annualUtilitiesOwnerPaid: Number(state.annualUtilitiesOwnerPaid) || 0,
+      annualHoaCondoFees: 0,
+      annualTurnoverAdmin: Number(state.annualTurnoverAdmin) || 0,
+      annualCapexReserve: Number(state.annualCapexReserve) || 0
+    },
+    financing: {
+      loanAmount: Number(state.loanAmount) || 0,
+      interestRate: Number(state.interestRate) || 0,
+      amortizationYears: Number(state.amortizationYears) || 30,
+      interestOnlyYears: 0,
+      stressInterestRate: Number(state.stressInterestRate) || 0
+    },
+    underwriting: {
+      supportableValue: Number(state.supportableValue) || 0,
+      asStabilizedValue: Number(state.supportableValue) || 0,
+      targetDscr: 1.25,
+      minDscr: 1,
+      targetCashOnCash: 0.1,
+      passiveAlternativeRate: 0.05,
+      requiresRentGrowthToWork: Boolean(state.requiresRentGrowthToWork),
+      rentsVerified: Boolean(state.rentsVerified)
+    },
+    dueDiligence: {
+      fieldReviewed: Boolean(state.fieldReviewed),
+      sewerRisk: "low",
+      roofYearsRemaining: 0,
+      hvacYearsRemaining: 0,
+      electricalRisk: "low",
+      utilityMetering: "separate",
+      neighborhoodScore: Number(state.neighborhoodScore) || 0,
+      competitiveSupplyRisk: "low",
+      capexAdjustments: []
+    }
+  };
 }

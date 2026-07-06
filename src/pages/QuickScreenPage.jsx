@@ -1,23 +1,7 @@
 import { NumberField, ToggleField, MetricCard, TextField } from "../components/ui/FieldControls.jsx";
 import { PageFrame } from "../components/ui/PageFrame.jsx";
-import { buildDealFromState, buildQuickScreenState } from "../fixtures/quickScreenState.js";
-import { failingRentalDeal, strongRentalDeal, unrentableSpeculativeDeal } from "../fixtures/sampleDeals.js";
+import { buildDealFromState } from "../fixtures/quickScreenState.js";
 import { analyzeDeal } from "../utils/underwriteMath.js";
-
-const PRESETS = {
-  strong: {
-    label: "Strong Duplex",
-    deal: strongRentalDeal
-  },
-  failing: {
-    label: "Bad Basis",
-    deal: failingRentalDeal
-  },
-  speculative: {
-    label: "Speculative Rents",
-    deal: unrentableSpeculativeDeal
-  }
-};
 
 const BUCKET_MAX = {
   cashFlowAndDscr: 30,
@@ -44,23 +28,10 @@ export default function QuickScreenPage({ formState, setFormState, onSaveRecord 
   const activeDeal = buildDealFromState(formState);
   const analysis = analyzeDeal(activeDeal);
 
-  function loadPreset(key) {
-    const preset = PRESETS[key];
-    if (!preset) {
-      return;
-    }
-
-    setFormState({
-      ...buildQuickScreenState(preset.deal),
-      preset: key
-    });
-  }
-
   function handleChange(event) {
     const { name, value } = event.target;
     setFormState((current) => ({
       ...current,
-      preset: "custom",
       [name]: value === "true" ? true : value === "false" ? false : value
     }));
   }
@@ -73,24 +44,9 @@ export default function QuickScreenPage({ formState, setFormState, onSaveRecord 
       title="Quick Screen"
       copy="This is the first live workflow in the app: basis, rent, OpEx, debt, and confidence flags in one place."
       actions={
-        <>
-          <div className="preset-row">
-            {Object.entries(PRESETS).map(([key, preset]) => (
-              <button
-                key={key}
-                className="preset-button"
-                type="button"
-                data-active={formState.preset === key}
-                onClick={() => loadPreset(key)}
-              >
-                {preset.label}
-              </button>
-            ))}
-          </div>
-          <button className="primary-button" type="button" onClick={() => onSaveRecord(formState)}>
-            Save Record
-          </button>
-        </>
+        <button className="primary-button" type="button" onClick={() => onSaveRecord(formState)}>
+          Save Record
+        </button>
       }
     >
       <div className="workspace-grid">
