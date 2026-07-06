@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check src/utils/underwriteMath.js"
+    "check": "node --check src/utils/underwriteMath.js",
+    "test": "node --test"
   }
 }
